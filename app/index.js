@@ -1,105 +1,130 @@
-import { Camera, CameraView, CameraType, useCameraPermissions, takePictureAsync } from 'expo-camera';
-import { Image } from 'expo-image';
-import { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+// import { Image } from 'expo-image';
+// import { useState } from 'react';
+// import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// import * as tf from '@tensorflow/tfjs';
+// import '@tensorflow/tfjs-react-native';
 
-export default function App() {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState('back');
-  const [camera, setCamera] = useState(null);
-  const [processedImage, setProcessedImage] = useState('');
+// export default function App() {
+  
+//   const [image, setImage] = useState(require('../assets/test.jpg'));
+  
+//   async function model() {
+//     await tf.ready();
+//     const tfliteModel = await tflite.loadTFLiteModel(
+//       'https://tfhub.dev/tensorflow/lite-model/mobilenet_v2_1.0_224/1/metadata/1');
+//     console.log('done')
+//   }
 
-  useEffect(()=> {
-    console.log(processedImage);
-  }, [processedImage]);
+//   // function processImage() {
+//   //   setImage('../assets/test.jpg');
+//   //   console.log(image);
+//   // }
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.upperContainer}>
+//         {/* <Image style={styles.image}
+          
+//           source={{ uri: 'file:///C:\React\obectdetection\assets\test.jpg' }}
+//         /> */}
+//       </View>
+//       <View style={styles.lowerContainer}>
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
+//         <TouchableOpacity>
+//           <Button title='Hello' onPress={model}>
 
-  async function takePicture() {
-    let options = {skipProcessing: true, base64: false, quality: 1};
-    let picutre = await camera.takePictureAsync(options=options);
+//           </Button>
+//         </TouchableOpacity>
+//       </View>
+      
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
     
-    setProcessedImage(picutre.uri);
-    
-  }
+//     flex: 1,
+//     justifyContent: 'center',
+//   },
+//   lowerContainer: {
+//     flex: 0.5,
+//     backgroundColor: '#795695',
+//   },
+//   upperContainer: {
+//     flex: 0.5,
+//     backgroundColor: '#c8a4d4',
+//   },
+//   image: {
+//     flex: 1,
+//     width: '100%',
+//   },
+  
+// });
+
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Image } from 'react-native';
+import * as tf from '@tensorflow/tfjs';
+import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
+import * as mobilenet from '@tensorflow-models/mobilenet';
+
+const App = () => {
+  const [isTfReady, setIsTfReady] = useState(false);
+  const [result, setResult] = useState('');
+  const image = useRef(null);
+
+  const load = async () => {
+    try {
+      // Load mobilenet.
+      await tf.ready();
+      const model = await mobilenet.load();
+      setIsTfReady(true);
+
+      // Start inference and show result.
+      const image = require('./basketball.jpg');
+      const imageAssetPath = Image.resolveAssetSource(image);
+      const response = await fetch(imageAssetPath.uri, {}, { isBinary: true });
+      const imageDataArrayBuffer = await response.arrayBuffer();
+      const imageData = new Uint8Array(imageDataArrayBuffer);
+      const imageTensor = decodeJpeg(imageData);
+      const prediction = await model.classify(imageTensor);
+      if (prediction && prediction.length > 0) {
+        setResult(
+          `${prediction[0].className} (${prediction[0].probability.toFixed(3)})`
+        );
+        console.log(prediction);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={(ref) => setCamera(ref)}>
-        <View style={styles.buttonContainer}>
-          {/* <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.button} onPress={takePicture}>
-            <Text style={styles.text}>Take Picture</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
-      <View style={styles.processedImage}>
-      <Image style={styles.image}
-        
-        source={{ uri: processedImage }}
+    <View
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Image
+        ref={image}
+        source={require('./basketball.jpg')}
+        style={{ width: 200, height: 200 }}
       />
-      
-      </View>
+      {!isTfReady && <Text>Loading TFJS model...</Text>}
+      {isTfReady && result === '' && <Text>Classifying...</Text>}
+      {result !== '' && <Text>{result}</Text>}
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    
-    flex: 1,
-    justifyContent: 'center',
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-  },
-  camera: {
-    flex: 0.5,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  processedImage: {
-    flex: 0.5,
-    backgroundColor: '#000000',
-  },
-  image: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#0553',
-  },
-  
-});
+export default App;
