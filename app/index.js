@@ -12,7 +12,7 @@ const App = () => {
   const loadModel = async () => {
     try {
       await tf.ready();
-      const tfModel = await mobilenet.load();
+      const tfModel = await mobilenet.load({version: 1, alpha: 0.25});
       setModel(tfModel);
     } catch (err) {
       console.log(err);
