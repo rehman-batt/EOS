@@ -37,11 +37,11 @@
       ],
       [
         "expo-router"
-      ],
-      "react-native-fast-tflite"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
     }
+
   }
 }
