@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import '@tensorflow/tfjs-react-native';
 
-const App = () => {
+const Home = ({ navigation }) => {
 
   const [model, setModel] = useState(null);
   const [success, setSuccess] = useState(true);
@@ -12,12 +13,25 @@ const App = () => {
   const loadModel = async () => {
     try {
       await tf.ready();
-      const tfModel = await mobilenet.load({version: 1, alpha: 0.25});
+      const tfModel = await mobilenet.load({ version: 1, alpha: 0.25 });
       setModel(tfModel);
     } catch (err) {
       console.log(err);
       setSuccess(false);
     }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      navigation.navigate("Result", { image: result.assets[0].uri });
+    }
+
+
   };
 
   useEffect(() => {
@@ -49,7 +63,7 @@ const App = () => {
             <Text style={styles.text}>Model Ready</Text>
           </View>
           <View style={styles.marginUtility}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={pickImage}>
               <Text style={styles.buttonText}>Gallery</Text>
             </TouchableOpacity>
 
@@ -77,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-
+    backgroundColor: 'white',
 
   },
   title: {
@@ -128,18 +142,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default Home;
