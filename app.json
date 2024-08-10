@@ -11,7 +11,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +24,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.rehmanbatt.EOS"
+      "package": "com.rehmanbatt.EOS",
+      "runtimeVersion": "1.0.0"
     },
     "plugins": [
       [
@@ -37,10 +41,18 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos"
         }
-      ],
-      [
-        "expo-router"
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "15fc928f-3916-4b1f-9d68-8646d46e4d28"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/15fc928f-3916-4b1f-9d68-8646d46e4d28"
+    }
   }
 }

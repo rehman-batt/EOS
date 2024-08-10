@@ -1,4 +1,4 @@
-import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -109,7 +109,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-
+  button: {
+    width: 200,
+    height: 50,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+  },
 });
 
 
