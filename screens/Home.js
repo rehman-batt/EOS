@@ -72,7 +72,7 @@ const Home = ({ navigation }) => {
               <Text style={styles.buttonText}>Gallery</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CameraComponent", { model })}>
               <Text style={styles.buttonText}>Camera</Text>
             </TouchableOpacity>
           </View>
