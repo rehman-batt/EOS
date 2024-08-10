@@ -11,15 +11,15 @@ LogBox.ignoreLogs([
 ]);
 
 const Home = ({ navigation }) => {
-
   const [model, setModel] = useState(null);
   const [success, setSuccess] = useState(true);
 
   const loadModel = async () => {
     try {
       await tf.ready();
-      const tfModel = await mobilenet.load({ version: 1, alpha: 0.25 });
+      const tfModel = await mobilenet.load({ version: 1, alpha: 0.5 });
       setModel(tfModel);
+      
     } catch (err) {
       console.log(err);
       setSuccess(false);
@@ -29,7 +29,7 @@ const Home = ({ navigation }) => {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+      quality: 0.5,
     });
 
     if (!result.canceled) {
