@@ -16,7 +16,12 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.rehmanbatt.EOS"
     },
     "plugins": [
       [
@@ -37,6 +42,5 @@
         "expo-router"
       ]
     ]
-
   }
 }

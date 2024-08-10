@@ -4,6 +4,11 @@ import * as ImagePicker from 'expo-image-picker';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import '@tensorflow/tfjs-react-native';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 const Home = ({ navigation }) => {
 
@@ -28,7 +33,7 @@ const Home = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      navigation.navigate("Result", { image: result.assets[0].uri });
+      navigation.navigate("Result", { image: result.assets[0].uri, model });
     }
 
 
